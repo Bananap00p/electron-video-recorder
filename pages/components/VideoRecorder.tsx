@@ -1,4 +1,10 @@
 import React, { useRef, useState } from "react";
+import {
+  VideoCameraIcon,
+  StopCircleIcon,
+  PlayIcon,
+} from "@heroicons/react/16/solid";
+import VideoModal from "./VideoModal";
 
 const VideoRecorder: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -6,6 +12,7 @@ const VideoRecorder: React.FC = () => {
   const [recording, setRecording] = useState(false);
   const [videoURL, setVideoURL] = useState<string | null>(null);
   const [errors, setErrors] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   const startRecording = async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -41,7 +48,6 @@ const VideoRecorder: React.FC = () => {
             setErrors(
               "Camera access is denied, please enable it and try again."
             );
-            // Handle user denying camera access
           } else {
             if (err.message) {
               setErrors(`Error accessing camera with err: ${err.message}`);
@@ -66,35 +72,56 @@ const VideoRecorder: React.FC = () => {
       videoRef.current.srcObject = null;
     }
   };
+  const fullWidthCentered = "w-full max-w-xl mx-auto";
+  const videoStyle = `bg-white box-border border-2 border-slate-100 aspect-[4/3] ${fullWidthCentered}`;
+  const buttonStyle =
+    "text-white rounded-lg mt-4 px-5 py-2.5 me-2 text-center inline-flex items-center";
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className={fullWidthCentered}>
       <div>
-        <video
-          ref={videoRef}
-          className="box-border border-4 border-black w-full max-w-3xl mx-auto"
-        />
-        <div>
+        <video ref={videoRef} className={videoStyle} />
+        <div className="flex justify-between items-center space-x-4">
           {recording ? (
-            <button onClick={stopRecording}>Stop Recording</button>
+            <button
+              onClick={stopRecording}
+              type="button"
+              className={`${buttonStyle} bg-red-500 hover:bg-red-600`}
+            >
+              <StopCircleIcon className="w-5 h-5 me-1" />
+              Stop Recording
+            </button>
           ) : (
-            <button onClick={startRecording}>Start Recording</button>
+            <button
+              onClick={startRecording}
+              type="button"
+              className={`${buttonStyle} bg-emerald-500 hover:bg-emerald-600`}
+            >
+              <VideoCameraIcon className="w-5 h-5 me-1" />
+              Start Recording
+            </button>
+          )}
+          {videoURL && (
+            <button
+              onClick={() => setShowModal(true)}
+              type="button"
+              className={`${buttonStyle} bg-slate-100 hover:bg-slate-200 text-slate-900`}
+            >
+              <PlayIcon className="w-5 h-5 me-1" />
+              Play Recorded Video
+            </button>
           )}
         </div>
       </div>
 
-      {/* Todo: display play button that plays the recorded video in modal */}
-      {videoURL && (
-        <div>
-          <h3>Recorded Video:</h3>
-          <video
-            src={videoURL}
-            controls
-            className="box-border border-4 border-black w-full max-w-3xl mx-auto"
-          />
-        </div>
-      )}
       {errors && <div className="text-red-700">{errors}</div>}
+      <div className={fullWidthCentered}>
+        <VideoModal
+          showModal={showModal}
+          videoUrl={videoURL || ""}
+          onClose={() => setShowModal(false)}
+        />
+      </div>
     </div>
   );
 };
