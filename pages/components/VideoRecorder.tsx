@@ -5,6 +5,7 @@ import {
   PlayIcon,
 } from "@heroicons/react/16/solid";
 import VideoModal from "./VideoModal";
+import Alert from "./Alert";
 
 const VideoRecorder: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,7 +37,7 @@ const VideoRecorder: React.FC = () => {
           mediaRecorder.onstop = () => {
             const blob = new Blob(chunks, { type: "video/webm" });
             const url = URL.createObjectURL(blob);
-            //Todo: save the video to the "server"
+
             setVideoURL(url);
           };
           mediaRecorder.start();
@@ -59,7 +60,6 @@ const VideoRecorder: React.FC = () => {
     }
   };
 
-  //To do: implement the logic to save the video to the server, should be async
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
@@ -81,6 +81,7 @@ const VideoRecorder: React.FC = () => {
     <div className={fullWidthCentered}>
       <div>
         <video ref={videoRef} className={videoStyle} />
+        {errors && <Alert errorMsg={errors} />}
         <div className="flex justify-between items-center space-x-4">
           {recording ? (
             <button
@@ -105,7 +106,7 @@ const VideoRecorder: React.FC = () => {
             <button
               onClick={() => setShowModal(true)}
               type="button"
-              className={`${buttonStyle} bg-slate-100 hover:bg-slate-200 text-slate-900`}
+              className={`${buttonStyle} bg-slate-100 hover:bg-slate-200 text-purple-900`}
             >
               <PlayIcon className="w-5 h-5 me-1" />
               Play Recorded Video
@@ -114,7 +115,6 @@ const VideoRecorder: React.FC = () => {
         </div>
       </div>
 
-      {errors && <div className="text-red-700">{errors}</div>}
       <div className={fullWidthCentered}>
         <VideoModal
           showModal={showModal}
