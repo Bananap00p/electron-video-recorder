@@ -106,7 +106,7 @@ const VideoRecorder: React.FC = () => {
             <button
               onClick={() => setShowModal(true)}
               type="button"
-              className={`${buttonStyle} bg-slate-100 hover:bg-slate-200 text-purple-900`}
+              className={`${buttonStyle} bg-purple-900 border border-slate-100 hover:bg-purple-800`}
             >
               <PlayIcon className="w-5 h-5 me-1" />
               Play Recorded Video
